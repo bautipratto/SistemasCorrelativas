@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mis correlativas ISI</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#111111">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: sereno y funcional, una herramienta de estudiante que se usa todo el cuatrimestre.
+   IDEA: el horario suizo / plan de estudios impreso: niveles como filas con numeral grande colgado.
+   PICTURE: la grilla de materias coloreada por estado ES la imagen; el panel lateral es el detalle.
+   COLOUR and TYPE: blanco, negro, rojo señal #e4002b, un gris. Archivo ancho 800 + Archivo.
+   LAYOUT: borde izquierdo estricto, numerales de nivel en columna izquierda, regla gruesa arriba. */
+:root{color-scheme:light dark;--bg:light-dark(#fff,#0e0e0e);--ink:light-dark(#111,#f1f1f1);--mute:light-dark(#666,#9b9b9b);--line:light-dark(#d6d6d6,#2e2e2e);--soft:light-dark(#f2f2f2,#1a1a1a);--red:light-dark(#e4002b,#ff3355)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Archivo,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,3.5vw,48px) max(4vw,16px)}
+main{max-width:1240px}
+@media(min-width:1100px){main{margin-right:380px}}
+h1{font-size:clamp(32px,5vw,48px);line-height:1.05;font-stretch:112%;font-weight:800;margin:0;text-wrap:balance;letter-spacing:-.01em}
+header{border-top:10px solid var(--ink)}
+.sub{color:var(--mute);margin:8px 0 0;max-width:62ch}
+.save{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-size:14px;color:var(--mute)}
+.save i{width:10px;height:10px;border-radius:50%;background:var(--mute);display:inline-block}
+.save.ok i{background:#1f9d55}.save.warn i{background:var(--red)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0;border-top:2px solid var(--ink);margin-top:22px}
+.stat{padding:12px 14px 14px 0;border-bottom:1px solid var(--line)}
+.stat b{display:block;font-size:clamp(30px,4vw,44px);font-stretch:112%;font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat span{font-size:14px;color:var(--mute)}
+.stat small{font-size:18px;color:var(--mute);font-weight:600}
+.bar{height:8px;background:var(--soft);margin-top:14px;display:flex}
+.bar div{height:100%}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:18px}
+.chip{font:inherit;font-size:15px;min-height:44px;padding:0 14px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+input,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid var(--ink);padding:9px 11px;min-height:44px}
+#q{flex:1 1 200px}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.lvl{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;border-top:2px solid var(--ink);padding:14px 0 22px}
+.lvl>h2{margin:0;font-size:64px;line-height:.9;font-stretch:125%;font-weight:800}
+.lvl>h2 small{display:block;font-size:13px;font-stretch:100%;font-weight:500;color:var(--mute);margin-top:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.card{font:inherit;text-align:left;cursor:pointer;min-height:104px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);position:relative}
+.card .no{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;opacity:.75}
+.card .nm{font-weight:650;line-height:1.25}
+.card .ft{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:8px;font-size:13px}
+.card .nota{font-size:28px;font-weight:800;font-stretch:112%;line-height:1}
+.card.apr{background:var(--ink);color:var(--bg)}
+.card.reg{background:var(--red);border-color:var(--red);color:#fff}
+.card.cur{border-width:2.5px}
+.card.blo{background:var(--soft);color:var(--mute);border:1.5px dashed var(--line)}
+.card.sel{outline:4px solid var(--red);outline-offset:3px}
+.card.reg.sel{outline-color:var(--ink)}
+.card .tag{position:absolute;top:-9px;right:8px;font-size:12px;font-weight:700;padding:1px 7px;background:var(--bg);color:var(--ink);border:1.5px solid var(--ink)}
+.card.hide{display:none}
+.sec{font-size:24px;font-stretch:112%;font-weight:800;margin:30px 0 4px}
+aside{position:fixed;z-index:5;background:var(--bg);border-top:10px solid var(--ink);overflow:auto;padding:18px 20px 26px;right:0;bottom:0;left:0;max-height:72vh;box-shadow:0 -10px 30px rgba(0,0,0,.18);transform:translateY(105%);transition:transform .22s ease}
+aside.open{transform:none}
+@media(min-width:1100px){aside{top:0;left:auto;width:380px;max-height:none;border-top:0;border-left:2px solid var(--ink);box-shadow:none;transform:none}}
+@media(prefers-reduced-motion:reduce){aside{transition:none}}
+aside h3{font-size:26px;line-height:1.1;font-stretch:112%;font-weight:800;margin:4px 0 6px;text-wrap:balance}
+.meta{color:var(--mute);font-size:14px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);margin:16px 0 8px;border:1.5px solid var(--ink)}
+.seg button{font:inherit;font-size:15px;min-height:44px;border:0;border-right:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.seg button[data-e=R][aria-pressed=true]{background:var(--red);color:#fff}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+label{font-size:14px;color:var(--mute);display:grid;gap:4px}
+aside h4{font-size:15px;margin:18px 0 6px;padding-top:10px;border-top:1px solid var(--line)}
+.req{list-style:none;padding:0;margin:0;display:grid;gap:2px}
+.req button{font:inherit;font-size:15px;background:none;border:0;color:var(--ink);cursor:pointer;padding:6px 0;text-align:left;display:flex;gap:10px;width:100%;min-height:36px}
+.req .ck{flex:none;width:22px;font-weight:800}
+.req .ok{color:#1f9d55}.req .no{color:var(--red)}
+.note{font-size:14px;padding:10px 12px;background:var(--soft);margin:10px 0}
+.warn{border-left:0;background:light-dark(#fde6ea,#3a1219)}
+.x{float:right;font:inherit;font-size:15px;min-height:40px;padding:0 12px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer}
+@media(min-width:1100px){.x{display:none}}
+.empty{color:var(--mute);font-size:15px}
+footer{border-top:2px solid var(--ink)}
+footer textarea{width:100%;min-height:80px;margin:8px 0}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+@media(max-width:600px){.lvl{grid-template-columns:1fr}.lvl>h2{font-size:44px;display:flex;align-items:baseline;gap:10px}.lvl>h2 small{display:inline}.grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.card{min-height:96px}}
+</style>
+</head>
+<body>
+<main>
+<header class="band">
+  <h1>Mis correlativas · ISI Plan 2023</h1>
+  <p class="sub">Tocá una materia y marcala como Regular o Aprobada. Las cursables y no cursables se calculan solas con la tabla de correlativas de la UTN FRC.</p>
+  <div class="save" id="save"><i></i><span>Guardado en este teléfono</span></div>
+  <div class="stats" id="stats"></div>
+  <div class="bar" id="bar" aria-hidden="true"></div>
+  <div class="tools" role="group" aria-label="Filtrar">
+    <button class="chip" data-f="all" aria-pressed="true">Todas</button>
+    <button class="chip" data-f="cur" aria-pressed="false">Cursables</button>
+    <button class="chip" data-f="reg" aria-pressed="false">Regulares</button>
+    <button class="chip" data-f="apr" aria-pressed="false">Aprobadas</button>
+    <button class="chip" data-f="blo" aria-pressed="false">No cursables</button>
+    <input id="q" type="search" placeholder="Buscar materia o número" aria-label="Buscar materia">
+  </div>
+</header>
+<section class="band" style="padding-top:0" id="plan"></section>
+<footer class="band">
+  <h2 class="sec" style="margin-top:0">Respaldo</h2>
+  <p class="sub">Todo se guarda en este teléfono, sin internet. Si cambiás de celular o borrás los datos del navegador, antes copiá el código de respaldo y guardalo (por ejemplo en un mensaje a vos mismo).</p>
+  <textarea id="bk" aria-label="Código de respaldo" placeholder="Pegá acá un código de respaldo"></textarea>
+  <div class="btns">
+    <button class="chip" id="copy">Copiar respaldo</button>
+    <button class="chip" id="load">Restaurar desde el código</button>
+    <button class="chip" id="wipe">Borrar todo</button>
+  </div>
+  <p class="meta" id="bkmsg" role="status"></p>
+</footer>
+</main>
+<aside id="panel" aria-live="polite"></aside>
+<script>
+{
+// [id, nombre, nivel, modalidad, regulares, aprobadas, horas]
+const OB=[
+[1,"Análisis Matemático I",1,"A",[],[],5],[2,"Álgebra y Geometría Analítica",1,"A",[],[],5],[3,"Física I",1,"A",[],[],5],[4,"Inglés I",1,"A",[],[],2],[5,"Lógica y Estructuras Discretas",1,"1C-2C",[],[],3],[6,"Algoritmos y Estructuras de Datos",1,"A",[],[],5],[7,"Arquitectura de Computadoras",1,"2C-1C",[],[],4],[8,"Sistemas y Procesos de Negocio",1,"1C-2C",[],[],3],[11,"Ingeniería y Sociedad",1,"2C-1C",[],[],2],
+[9,"Análisis Matemático II",2,"A",[1,2],[],5],[10,"Física II",2,"A",[1,3],[],5],[12,"Inglés II",2,"A",[4],[],2],[13,"Sintaxis y Semántica de los Lenguajes",2,"1C-2C",[5,6],[],4],[14,"Paradigmas de Programación",2,"1C-2C",[5,6],[],4],[15,"Sistemas Operativos",2,"A",[7],[],4],[16,"Análisis de Sistemas de Información",2,"A",[6,8],[],6],[17,"Probabilidad y Estadística",2,"1C-2C",[1,2],[],3],
+[18,"Economía",3,"2C-1C",[],[1,2],3],[19,"Base de Datos",3,"1C-2C",[13,16],[5,6],4],[20,"Desarrollo de Software",3,"1C-2C",[14,16],[5,6],4],[21,"Comunicación de Datos",3,"A",[],[3,7],4],[22,"Análisis Numérico",3,"2C-1C",[9],[1,2],3],[23,"Diseño de Sistemas de Información",3,"A",[14,16],[4,6,8],6],[99,"Seminario Integrador (Analista)",3,"2C",[16],[6,8,13,14],4],
+[24,"Legislación",4,"2C-1C",[11],[],2],[25,"Ingeniería y Calidad de Software",4,"2C-1C",[19,20,23],[13,14],3],[26,"Redes de Datos",4,"A",[15,21],[],4],[27,"Investigación Operativa",4,"A",[17,22],[],4],[28,"Simulación",4,"1C-2C",[17],[9],3],[29,"Tecnologías para la Automatización",4,"2C-1C",[10,22],[9],3],[30,"Administración de Sistemas de Información",4,"A",[18,23],[16],6],
+[31,"Inteligencia Artificial",5,"2C-1C",[28],[17,22],3],[32,"Ciencia de Datos",5,"2C-1C",[28],[17,19],3],[33,"Sistemas de Gestión",5,"1C-2C",[18,27],[23],4],[34,"Gestión Gerencial",5,"1C-2C",[24,30],[18],3],[35,"Seguridad en los Sistemas de Información",5,"1C-2C",[26,30],[20,21],3],[36,"Proyecto Final",5,"A",[25,26,30],[12,20,23],6]];
+// [id, nombre, nivel, modalidad, regulares, aprobadas, créditos]
+const EL=[
+["E1","Backend de Aplicaciones",3,"2C",[14,13],[6],4],
+["E2","Green Software",4,"1C-2C",[30],[20],3],["E3","Gestión Industrial de la Producción",4,"1C",[19],[8,16],3],["E4","Gestión de la Mejora de los Procesos",4,"1C-2C",[19],[8,16],3],["E5","Desarrollo y Operaciones DevOps",4,"2C",[19,20,23],[13,14],3],["E6","Desarrollo de Aplicaciones con Objetos",4,"2C",[13],[6],2],["E7","Comunicación Multimedial en el Desarrollo de SI",4,"2C",[19],[8,16],3],["E8","Seguridad en el Desarrollo de Software",4,"1C",[19,20,23],[8,15],3],["E9","Experiencia e Interfaces de Usuario",4,"1C",[23],[],3],
+["E10","Desarrollo de Tecnología Blockchain",5,"2C",[19,26],[14,20],3],["E11","Gerenciamiento Estratégico",5,"1C",[30],[20],3],["E12","Creatividad y Desarrollos en Entornos Virtuales",5,"2C",[23],[20],3],["E13","Consultoría en Negocios Digitales",5,"2C",[30],[20],3],["E14","Emprendimientos Tecnológicos",5,"1C-2C",[30],[16,19],3],["E15","Habilidades Blandas",5,"2C",[30],[],3],["E16","Decisiones en Escenarios Complejos",5,"1C-2C",[27],[],3],["E17","Testing de Software",5,"2C",[25],[19,20],3],["E18","Integración de Aplicaciones en Entorno Web",5,"2C",[26],[19,20],3],["E19","Ingeniería de Software de Fuentes Abiertas/Libres",5,"1C",[19,20,26],[13,14],3]];
+const ALL=[...OB.map(r=>({id:String(r[0]),n:r[1],lv:r[2],mod:r[3],rg:r[4].map(String),ap:r[5].map(String),hs:r[6],el:false})),...EL.map(r=>({id:r[0],n:r[1],lv:r[2],mod:r[3],rg:r[4].map(String),ap:r[5].map(String),cr:r[6],el:true}))];
+const BY=Object.fromEntries(ALL.map(m=>[m.id,m]));
+const MODS={"A":"Anual","1C":"1.er cuat.","2C":"2.º cuat.","1C-2C":"1.er o 2.º cuat.","2C-1C":"2.º o 1.er cuat."};
+const LS="isi2023-correlativas";
+let S={m:{},pps:false},sel=null,filt="all",q="",edited=false;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const clean=o=>{const out={m:{},pps:!!(o&&o.pps)};const m=(o&&o.m)||{};for(const k in m){if(!BY[k])continue;const v=m[k]||{};if(v.e!=="R"&&v.e!=="A")continue;const r={e:v.e};const n=Number(v.n);if(v.e==="A"&&n>=1&&n<=10)r.n=n;if(v.e==="A"&&Array.isArray(v.ap)){const a=v.ap.map(Number).filter(x=>x>=1&&x<=10);if(a.length)r.ap=a}out.m[k]=r}return out};
+try{const raw=localStorage.getItem(LS);if(raw)S=clean(JSON.parse(raw))}catch(e){}
+const est=id=>(S.m[id]&&S.m[id].e)||"";
+const okR=id=>est(id)!=="";const okA=id=>est(id)==="A";
+const puede=m=>m.rg.every(okR)&&m.ap.every(okA);
+const status=m=>{const e=est(m.id);return e==="A"?"apr":e==="R"?"reg":puede(m)?"cur":"blo"};
+const LBL={apr:"Aprobada",reg:"Regular",cur:"Cursable",blo:"No cursable"};
+const habilita=id=>ALL.filter(m=>m.rg.includes(id)||m.ap.includes(id));
+const prevAll=m=>m.id==="99"?OB.map(r=>String(r[0])).filter(x=>+x>=1&&+x<=23):m.id==="36"?OB.map(r=>String(r[0])).filter(x=>x!=="36"&&x!=="99"):[];
+function stats(){
+  const ob=ALL.filter(m=>!m.el&&m.id!=="99");
+  const c={apr:0,reg:0,cur:0,blo:0};ALL.forEach(m=>c[status(m)]++);
+  const aOb=ob.filter(m=>okA(m.id)).length,rOb=ob.filter(m=>est(m.id)==="R").length;
+  const notas=[],con=[];ALL.forEach(m=>{const v=S.m[m.id];if(v&&v.e==="A"&&v.n){notas.push(v.n);con.push(v.n,...(v.ap||[]))}});
+  const avg=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2).replace(".",","):"—";
+  const cr=ALL.filter(m=>m.el&&okA(m.id)).reduce((s,m)=>s+m.cr,0);
+  $("stats").innerHTML=[
+    [`${aOb}<small> / ${ob.length}</small>`,"Obligatorias aprobadas"],[c.reg,"Regulares"],[c.cur,"Cursables ahora"],
+    [avg(notas),`Promedio sin aplazos · ${notas.length} nota${notas.length===1?"":"s"}`],[avg(con),"Promedio con aplazos"],[`${cr}<small> / 20</small>`,"Créditos electivos"]
+  ].map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
+  $("bar").innerHTML=`<div style="width:${aOb/ob.length*100}%;background:var(--ink)"></div><div style="width:${rOb/ob.length*100}%;background:var(--red)"></div>`;
+}
+function card(m){
+  const st=status(m),v=S.m[m.id];let tag="";
+  if(sel&&sel!==m.id){const s=BY[sel];if(s.rg.includes(m.id)||s.ap.includes(m.id))tag="requisito";else if(m.rg.includes(sel)||m.ap.includes(sel))tag="habilita"}
+  const hit=(filt==="all"||filt===st)&&(!q||m.n.toLowerCase().includes(q)||m.id.toLowerCase()===q);
+  return `<button class="card ${st}${sel===m.id?" sel":""}${hit?"":" hide"}" data-id="${m.id}" aria-label="${esc(m.n)}, ${LBL[st]}">${tag?`<span class="tag">${tag}</span>`:""}<span class="no">${m.el?"Electiva · "+m.cr+" créd.":"Nº "+m.id}</span><span class="nm">${esc(m.n)}</span><span class="ft"><span>${LBL[st]}</span>${v&&v.e==="A"&&v.n?`<span class="nota">${v.n}</span>`:""}</span></button>`;
+}
+function lvl(list,n,title){const items=list.filter(m=>m.lv===n);if(!items.length)return "";return `<div class="lvl"><h2>${n}<small>${title}</small></h2><div class="grid">${items.map(card).join("")}</div></div>`}
+function render(){
+  stats();
+  const ob=ALL.filter(m=>!m.el),el=ALL.filter(m=>m.el);
+  $("plan").innerHTML=[1,2,3,4,5].map(n=>lvl(ob,n,"Nivel")).join("")+`<h2 class="sec">Electivas</h2><p class="sub" style="margin-bottom:12px">Ingeniería pide 20 créditos; Analista, al menos 4 de 3.er nivel.</p>`+[3,4,5].map(n=>lvl(el,n,"Nivel")).join("");
+  panel();
+}
+function reqList(ids,need){
+  if(!ids.length)return `<p class="empty">Ninguna.</p>`;
+  return `<ul class="req">${ids.map(id=>{const m=BY[id];const ok=need==="A"?okA(id):okR(id);return `<li><button data-go="${id}"><span class="ck ${ok?"ok":"no"}">${ok?"✓":"✗"}</span><span>${m.el?"":id+" · "}${esc(m.n)}</span></button></li>`}).join("")}</ul>`;
+}
+function panel(){
+  const p=$("panel");
+  if(!sel){p.classList.remove("open");p.innerHTML=`<h3>Elegí una materia</h3><p class="meta">Tocá cualquier tarjeta para marcar su estado, cargar la nota y ver qué necesita y qué habilita.</p><h4>Cómo se calcula</h4><p class="meta">Cursable: tenés regulares (o aprobadas) las de la columna Regular, y aprobadas las de la columna Aprobada. Cargá las notas en las aprobadas y el promedio se actualiza solo.</p>`;return}
+  const m=BY[sel],v=S.m[sel]||{},st=status(m),e=v.e||"";
+  const hab=habilita(sel);
+  let rendir="";
+  if(e==="R"){const falt=[...new Set([...m.rg,...m.ap,...prevAll(m)])].filter(x=>!okA(x));const pps=m.id==="36"&&!S.pps;
+    rendir=`<h4>Para rendir el final</h4>${falt.length||pps?`<p class="meta">Te falta aprobar: ${falt.map(x=>BY[x].el?esc(BY[x].n):x).join(", ")}${pps?(falt.length?" y ":"")+"la PPS":""}.</p>`:`<p class="meta"><b style="color:#1f9d55">Podés rendirla:</b> tenés aprobadas todas sus correlativas.</p>`}<p class="meta">Regla general UTN: para rendir necesitás aprobadas las correlativas de cursado.</p>`}
+  const aviso=e&&!puede(m)?`<p class="note warn">Según la tabla todavía no cumplís las correlativas para cursarla. Revisá si falta marcar alguna.</p>`:"";
+  const esp=m.id==="99"?`<p class="note">Para rendir el Seminario y obtener el título de Analista hay que tener aprobadas todas las materias del 1 al 23.</p>`:m.id==="36"?`<p class="note">Para rendir Proyecto Final hay que aprobar todas las materias previas del plan, y la Práctica Profesional Supervisada es condición para inscribirse.</p><label style="display:flex;gap:10px;align-items:center;color:var(--ink);font-size:15px"><input type="checkbox" id="pps" ${S.pps?"checked":""} style="min-height:auto;width:22px;height:22px"> PPS acreditada</label>`:"";
+  p.innerHTML=`<button class="x" id="close">Cerrar</button><span class="meta">${m.el?"Electiva":"Nº "+m.id} · Nivel ${m.lv}</span><h3>${esc(m.n)}</h3><span class="meta">${MODS[m.mod]||m.mod} · ${m.el?m.cr+" créditos":m.hs+" h semanales"} · ahora: <b>${LBL[st]}</b></span>
+  <div class="seg" role="group" aria-label="Estado"><button data-e="" aria-pressed="${e===""}">Sin cursar</button><button data-e="R" aria-pressed="${e==="R"}">Regular</button><button data-e="A" aria-pressed="${e==="A"}">Aprobada</button></div>
+  ${aviso}
+  ${e==="A"?`<div class="row"><label>Nota final<input id="nota" type="number" min="1" max="10" step="1" inputmode="numeric" value="${v.n||""}" placeholder="1 a 10"></label><label>Aplazos (opcional)<input id="aplz" type="text" inputmode="numeric" value="${(v.ap||[]).join(", ")}" placeholder="ej: 2, 4"></label></div>`:""}
+  ${esp}${rendir}
+  <h4>Para cursarla, regulares</h4>${reqList(m.rg,"R")}
+  <h4>Para cursarla, aprobadas</h4>${reqList(m.ap,"A")}
+  <h4>Habilita</h4>${hab.length?`<ul class="req">${hab.map(h=>`<li><button data-go="${h.id}"><span class="ck">→</span><span>${h.el?"":h.id+" · "}${esc(h.n)}</span></button></li>`).join("")}</ul>`:`<p class="empty">No es correlativa de otra materia.</p>`}`;
+  p.classList.add("open");
+}
+// ---------- guardado local ----------
+function setSave(kind,txt){const s=$("save");s.className="save "+kind;s.querySelector("span").textContent=txt}
+function saveLocal(){try{localStorage.setItem(LS,JSON.stringify(S));setSave("ok","Guardado en este teléfono")}catch(e){setSave("warn","No se pudo guardar: usá el respaldo")}}
+function changed(){edited=true;saveLocal();render()}
+setSave("ok","Guardado en este teléfono");
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+// ---------- eventos ----------
+document.addEventListener("click",ev=>{
+  const c=ev.target.closest(".card");if(c){sel=sel===c.dataset.id?null:c.dataset.id;render();return}
+  const g=ev.target.closest("[data-go]");if(g){sel=g.dataset.go;render();const el=document.querySelector(`.card[data-id="${sel}"]`);if(el&&innerWidth>=1100)el.scrollIntoView({block:"center",behavior:"smooth"});return}
+  const b=ev.target.closest(".seg button");if(b&&sel){const e=b.dataset.e;if(!e)delete S.m[sel];else{const old=S.m[sel]||{};S.m[sel]=e==="A"?{...old,e:"A"}:{e:"R"}}changed();return}
+  const f=ev.target.closest("[data-f]");if(f){filt=f.dataset.f;document.querySelectorAll("[data-f]").forEach(x=>x.setAttribute("aria-pressed",x===f));render();return}
+  if(ev.target.id==="close"){sel=null;render()}
+});
+document.addEventListener("change",ev=>{
+  const t=ev.target;if(!sel)return;
+  if(t.id==="nota"){const n=Math.round(Number(t.value));const v={...S.m[sel]};if(n>=1&&n<=10)v.n=n;else delete v.n;S.m[sel]=v;changed()}
+  if(t.id==="aplz"){const a=t.value.split(/[,;\s]+/).map(Number).filter(x=>x>=1&&x<=10);const v={...S.m[sel]};if(a.length)v.ap=a;else delete v.ap;S.m[sel]=v;changed()}
+  if(t.id==="pps"){S.pps=t.checked;changed()}
+});
+$("q").addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();render()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&sel){sel=null;render()}});
+const msg=t=>{$("bkmsg").textContent=t};
+$("copy").addEventListener("click",async()=>{const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));$("bk").value=code;try{await navigator.clipboard.writeText(code);msg("Código copiado. Guardalo donde quieras.")}catch(e){$("bk").select();msg("Seleccioná el código del cuadro y copialo.")}});
+$("load").addEventListener("click",()=>{try{const o=JSON.parse(decodeURIComponent(escape(atob($("bk").value.trim()))));S=clean(o);sel=null;changed();msg("Respaldo restaurado.")}catch(e){msg("Ese código no es válido.")}});
+let wipeArm=false;
+$("wipe").addEventListener("click",e=>{if(!wipeArm){wipeArm=true;e.target.textContent="Tocá de nuevo para confirmar";setTimeout(()=>{wipeArm=false;e.target.textContent="Borrar todo"},4000);return}wipeArm=false;e.target.textContent="Borrar todo";S={m:{},pps:false};sel=null;changed();msg("Se borraron todas las marcas.")});
+render();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "Mis correlativas ISI",
+  "short_name": "Correlativas",
+  "description": "Seguimiento de materias y correlativas de Ingeniería en Sistemas (Plan 2023, UTN FRC)",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
+  "lang": "es",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

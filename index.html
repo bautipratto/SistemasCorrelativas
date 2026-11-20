@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mis correlativas ISI</title>
+<script>try{const t=localStorage.getItem("isi2023-tema");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#111111">
 <link rel="icon" href="icon-192.png">
@@ -17,7 +18,7 @@
    PICTURE: la grilla de materias coloreada por estado ES la imagen; el panel lateral es el detalle.
    COLOUR and TYPE: blanco, negro, rojo señal #e4002b, un gris. Archivo ancho 800 + Archivo.
    LAYOUT: borde izquierdo estricto, numerales de nivel en columna izquierda, regla gruesa arriba. */
-:root{color-scheme:light dark;--bg:light-dark(#fff,#0e0e0e);--ink:light-dark(#111,#f1f1f1);--mute:light-dark(#666,#9b9b9b);--line:light-dark(#d6d6d6,#2e2e2e);--soft:light-dark(#f2f2f2,#1a1a1a);--red:light-dark(#e4002b,#ff3355)}
+:root{color-scheme:light dark;--bg:light-dark(#fff,#0e0e0e);--ink:light-dark(#111,#f1f1f1);--mute:light-dark(#666,#9b9b9b);--line:light-dark(#d6d6d6,#2e2e2e);--soft:light-dark(#f2f2f2,#1a1a1a);--red:light-dark(#e4002b,#ff3355);--reg:light-dark(#1d7a4c,#22875a)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Archivo,system-ui,sans-serif;overflow-x:clip}
@@ -53,7 +54,7 @@ input,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg)
 .card .ft{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:8px;font-size:13px}
 .card .nota{font-size:28px;font-weight:800;font-stretch:112%;line-height:1}
 .card.apr{background:var(--ink);color:var(--bg)}
-.card.reg{background:var(--red);border-color:var(--red);color:#fff}
+.card.reg{background:var(--reg);border-color:var(--reg);color:#fff}
 .card.cur{border-width:2.5px}
 .card.blo{background:var(--soft);color:var(--mute);border:1.5px dashed var(--line)}
 .card.sel{outline:4px solid var(--red);outline-offset:3px}
@@ -71,7 +72,7 @@ aside h3{font-size:26px;line-height:1.1;font-stretch:112%;font-weight:800;margin
 .seg button{font:inherit;font-size:15px;min-height:44px;border:0;border-right:1.5px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
-.seg button[data-e=R][aria-pressed=true]{background:var(--red);color:#fff}
+.seg button[data-e=R][aria-pressed=true]{background:var(--reg);color:#fff}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
 label{font-size:14px;color:var(--mute);display:grid;gap:4px}
 aside h4{font-size:15px;margin:18px 0 6px;padding-top:10px;border-top:1px solid var(--line)}
@@ -96,6 +97,7 @@ footer textarea{width:100%;min-height:80px;margin:8px 0}
   <h1>Mis correlativas · ISI Plan 2023</h1>
   <p class="sub">Tocá una materia y marcala como Regular o Aprobada. Las cursables y no cursables se calculan solas con la tabla de correlativas de la UTN FRC.</p>
   <div class="save" id="save"><i></i><span>Guardado en este teléfono</span></div>
+  <button class="chip" id="tema" style="margin-left:12px" aria-label="Cambiar tema"></button>
   <div class="stats" id="stats"></div>
   <div class="bar" id="bar" aria-hidden="true"></div>
   <div class="tools" role="group" aria-label="Filtrar">
@@ -139,10 +141,10 @@ const ALL=[...OB.map(r=>({id:String(r[0]),n:r[1],lv:r[2],mod:r[3],rg:r[4].map(St
 const BY=Object.fromEntries(ALL.map(m=>[m.id,m]));
 const MODS={"A":"Anual","1C":"1.er cuat.","2C":"2.º cuat.","1C-2C":"1.er o 2.º cuat.","2C-1C":"2.º o 1.er cuat."};
 const LS="isi2023-correlativas";
-let S={m:{},pps:false},sel=null,filt="all",q="",edited=false;
+let S={m:{},pps:false},sel=null,filt="all",q="",edited=false,notaErr=false;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const clean=o=>{const out={m:{},pps:!!(o&&o.pps)};const m=(o&&o.m)||{};for(const k in m){if(!BY[k])continue;const v=m[k]||{};if(v.e!=="R"&&v.e!=="A")continue;const r={e:v.e};const n=Number(v.n);if(v.e==="A"&&n>=1&&n<=10)r.n=n;if(v.e==="A"&&Array.isArray(v.ap)){const a=v.ap.map(Number).filter(x=>x>=1&&x<=10);if(a.length)r.ap=a}out.m[k]=r}return out};
+const clean=o=>{const out={m:{},pps:!!(o&&o.pps)};const m=(o&&o.m)||{};for(const k in m){if(!BY[k])continue;const v=m[k]||{};if(v.e!=="R"&&v.e!=="A")continue;const r={e:v.e};const n=Number(v.n);if(v.e==="A"&&n>=6&&n<=10)r.n=n;if(v.e==="A"&&Array.isArray(v.ap)){const a=v.ap.map(Number).filter(x=>x>=1&&x<=5);if(a.length)r.ap=a}out.m[k]=r}return out};
 try{const raw=localStorage.getItem(LS);if(raw)S=clean(JSON.parse(raw))}catch(e){}
 const est=id=>(S.m[id]&&S.m[id].e)||"";
 const okR=id=>est(id)!=="";const okA=id=>est(id)==="A";
@@ -162,7 +164,7 @@ function stats(){
     [`${aOb}<small> / ${ob.length}</small>`,"Obligatorias aprobadas"],[c.reg,"Regulares"],[c.cur,"Cursables ahora"],
     [avg(notas),`Promedio sin aplazos · ${notas.length} nota${notas.length===1?"":"s"}`],[avg(con),"Promedio con aplazos"],[`${cr}<small> / 20</small>`,"Créditos electivos"]
   ].map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
-  $("bar").innerHTML=`<div style="width:${aOb/ob.length*100}%;background:var(--ink)"></div><div style="width:${rOb/ob.length*100}%;background:var(--red)"></div>`;
+  $("bar").innerHTML=`<div style="width:${aOb/ob.length*100}%;background:var(--ink)"></div><div style="width:${rOb/ob.length*100}%;background:var(--reg)"></div>`;
 }
 function card(m){
   const st=status(m),v=S.m[m.id];let tag="";
@@ -194,7 +196,7 @@ function panel(){
   p.innerHTML=`<button class="x" id="close">Cerrar</button><span class="meta">${m.el?"Electiva":m.op?"Opcional · Nº "+m.id:"Nº "+m.id} · Nivel ${m.lv}</span><h3>${esc(m.n)}</h3><span class="meta">${MODS[m.mod]||m.mod} · ${m.el?m.cr+" créditos":m.hs+" h semanales"} · ahora: <b>${LBL[st]}</b></span>
   <div class="seg" role="group" aria-label="Estado"><button data-e="" aria-pressed="${e===""}">Sin cursar</button><button data-e="R" aria-pressed="${e==="R"}">Regular</button><button data-e="A" aria-pressed="${e==="A"}">Aprobada</button></div>
   ${aviso}
-  ${e==="A"?`<div class="row"><label>Nota final<input id="nota" type="number" min="1" max="10" step="1" inputmode="numeric" value="${v.n||""}" placeholder="1 a 10"></label><label>Aplazos (opcional)<input id="aplz" type="text" inputmode="numeric" value="${(v.ap||[]).join(", ")}" placeholder="ej: 2, 4"></label></div>`:""}
+  ${e==="A"?`<div class="row"><label>Nota final<input id="nota" type="number" min="6" max="10" step="1" inputmode="numeric" value="${v.n||""}" placeholder="6 a 10"></label><label>Aplazos (opcional)<input id="aplz" type="text" inputmode="numeric" value="${(v.ap||[]).join(", ")}" placeholder="ej: 2, 4"></label></div>${notaErr?`<p class="note warn">La nota de aprobación va de 6 a 10.</p>`:""}`:""}
   ${esp}${rendir}
   <h4>Para cursarla, regulares</h4>${reqList(m.rg,"R")}
   <h4>Para cursarla, aprobadas</h4>${reqList(m.ap,"A")}
@@ -210,7 +212,7 @@ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catc
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 // ---------- eventos ----------
 document.addEventListener("click",ev=>{
-  const c=ev.target.closest(".card");if(c){sel=sel===c.dataset.id?null:c.dataset.id;render();return}
+  const c=ev.target.closest(".card");if(c){notaErr=false;sel=sel===c.dataset.id?null:c.dataset.id;render();return}
   const g=ev.target.closest("[data-go]");if(g){sel=g.dataset.go;render();const el=document.querySelector(`.card[data-id="${sel}"]`);if(el&&innerWidth>=1100)el.scrollIntoView({block:"center",behavior:"smooth"});return}
   const b=ev.target.closest(".seg button");if(b&&sel){const e=b.dataset.e;if(!e)delete S.m[sel];else{const old=S.m[sel]||{};S.m[sel]=e==="A"?{...old,e:"A"}:{e:"R"}}changed();return}
   const f=ev.target.closest("[data-f]");if(f){filt=f.dataset.f;document.querySelectorAll("[data-f]").forEach(x=>x.setAttribute("aria-pressed",x===f));render();return}
@@ -218,8 +220,8 @@ document.addEventListener("click",ev=>{
 });
 document.addEventListener("change",ev=>{
   const t=ev.target;if(!sel)return;
-  if(t.id==="nota"){const n=Math.round(Number(t.value));const v={...S.m[sel]};if(n>=1&&n<=10)v.n=n;else delete v.n;S.m[sel]=v;changed()}
-  if(t.id==="aplz"){const a=t.value.split(/[,;\s]+/).map(Number).filter(x=>x>=1&&x<=10);const v={...S.m[sel]};if(a.length)v.ap=a;else delete v.ap;S.m[sel]=v;changed()}
+  if(t.id==="nota"){const n=Math.round(Number(t.value));const v={...S.m[sel]};notaErr=t.value!==""&&!(n>=6&&n<=10);if(n>=6&&n<=10)v.n=n;else delete v.n;S.m[sel]=v;changed()}
+  if(t.id==="aplz"){const a=t.value.split(/[,;\s]+/).map(Number).filter(x=>x>=1&&x<=5);const v={...S.m[sel]};if(a.length)v.ap=a;else delete v.ap;S.m[sel]=v;changed()}
   if(t.id==="pps"){S.pps=t.checked;changed()}
 });
 $("q").addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();render()});
@@ -229,6 +231,12 @@ $("copy").addEventListener("click",async()=>{const code=btoa(unescape(encodeURIC
 $("load").addEventListener("click",()=>{try{const o=JSON.parse(decodeURIComponent(escape(atob($("bk").value.trim()))));S=clean(o);sel=null;changed();msg("Respaldo restaurado.")}catch(e){msg("Ese código no es válido.")}});
 let wipeArm=false;
 $("wipe").addEventListener("click",e=>{if(!wipeArm){wipeArm=true;e.target.textContent="Tocá de nuevo para confirmar";setTimeout(()=>{wipeArm=false;e.target.textContent="Borrar todo"},4000);return}wipeArm=false;e.target.textContent="Borrar todo";S={m:{},pps:false};sel=null;changed();msg("Se borraron todas las marcas.")});
+const TEMAS=["auto","light","dark"],TN={auto:"Tema: automático",light:"Tema: claro",dark:"Tema: oscuro"};
+let tema="auto";try{const t=localStorage.getItem("isi2023-tema");if(TEMAS.includes(t))tema=t}catch(e){}
+function aplicarTema(){if(tema==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=tema;$("tema").textContent=TN[tema];const dark=tema==="dark"||(tema==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.querySelector('meta[name=theme-color]').content=dark?"#0e0e0e":"#ffffff"}
+$("tema").addEventListener("click",()=>{tema=TEMAS[(TEMAS.indexOf(tema)+1)%3];try{localStorage.setItem("isi2023-tema",tema)}catch(e){}aplicarTema()});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",aplicarTema);
+aplicarTema();
 render();
 }
 </script>
